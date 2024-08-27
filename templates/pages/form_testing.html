@@ -1,0 +1,50 @@
+{% extends "_base.html" %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4">{{ title }}</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {{ form|crispy }}
+            
+            <h3 class="mt-4">Original Image Files</h3>
+            {% for original_image_form in original_image_forms %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        {{ original_image_form|crispy }}
+                    </div>
+                </div>
+            {% endfor %}
+            
+            <h3 class="mt-4">ROI Files</h3>
+            {% for roi_form in roi_file_forms %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        {{ roi_form|crispy }}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <h3 class="mt-4">Connectivity Files</h3>
+            {% for connectivity_form in connectivity_file_forms %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        {{ connectivity_form|crispy }}
+                    </div>
+                </div>
+            {% endfor %}
+            
+            <button type="submit" class="btn btn-primary mt-3">Save</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

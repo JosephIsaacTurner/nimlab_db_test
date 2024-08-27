@@ -6,8 +6,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-  <title>{% block title %}DjangoX{% endblock title %}</title>
-  <meta name="description" content="A framework for launching new Django projects quickly.">
+  <title>{% block title %}CBCT Web{% endblock title %}</title>
+  <meta name="description" content="Database Interface for the Center for Brain Circuit Therapeutics">
   <meta name="author" content="">
   <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 
@@ -15,68 +15,71 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+  <!-- Papaya CSS -->
+  <link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/rii-mango/Papaya@build-1455/release/current/minimal/papaya.css'/>
+  <!-- Include DataTables CSS-->
+  <link rel="stylesheet" href="//cdn.datatables.net/2.1.4/css/dataTables.dataTables.min.css">
+  <!-- Include jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>  <!-- include JQuery UI-->
+  <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js" integrity="sha256-sw0iNNXmOJbQhYFuC9OF2kOlD5KQKe1y5lfBn4C9Sjg=" crossorigin="anonymous"></script>  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <!-- include DataTables JS-->
+  <script src="//cdn.datatables.net/2.1.4/js/dataTables.min.js"></script>
+  <!-- Include Papaya JS-->
+  <script src="https://cdn.jsdelivr.net/gh/rii-mango/Papaya@build-1455/release/current/minimal/papaya.js"></script>
+  {% endblock %}
+  {% block style %}
   {% endblock %}
 </head>
 
-<body>
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'home' %}">DjangoX</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'about' %}">About</a>
-          </li>
+<body class="bg-light">
+  <header class="p-3 mb-3 border-bottom bg-dark">
+    <div class="container bg-dark">
+      <div class="bg-dark d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-light text-decoration-none">
+          <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
+            <use xlink:href="#bootstrap" />
+          </svg>
+        </a>
+  
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 custom-nav-link-hover">
+          <li><a id="home" href="{% url 'home' %}" class="nav-link px-2 text-light">Home</a></li>
+          <li><a id = "usage" href="{% url 'usage' %}" class="nav-link px-2 text-light">Usage</a></li>
+          <li><a id="datasets" href="{% url 'datasets' %}" class="nav-link px-2 text-light">Datasets</a></li>
         </ul>
-        {% if user.is_authenticated %}
-        <div class="mr-auto">
-          <ul class="navbar-nav">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                Settings
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">{{ user.email }}</a></li>
-                <li>
-                  <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item" href="{% url 'account_change_password' %}">Change password</a></li>
-                <li><a class="dropdown-item" href="{% url 'account_logout' %}">Sign out</a></li>
-              </ul>
+  
+        <div class="dropdown text-end">
+          {% if user.is_authenticated %}
+          <a href="#" class="d-block text-light text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ user.email }}
+          </a>
+          <ul class="dropdown-menu text-small">
+            <li><a class="dropdown-item" href="{% url 'account_change_password' %}">Change password</a></li>
+            <li>
+              <hr class="dropdown-divider">
             </li>
+            <li><a class="dropdown-item" href="{% url 'account_logout' %}">Sign out</a></li>
           </ul>
-        </div>
-        {% else %}
-        <div class="mr-auto">
-          <form class="form d-flex">
+          {% else %}
+          <form class="form-inline ml-auto">
             <a href="{% url 'account_login' %}" class="btn btn-outline-secondary">Log in</a>
-            <a href="{% url 'account_signup' %}" class="btn btn-primary ms-2">Sign up</a>
+            <a href="{% url 'account_signup' %}" class="btn btn-primary ml-2">Sign up</a>
           </form>
+          {% endif %}
         </div>
-        {% endif %}
       </div>
     </div>
-  </nav>
+  </header>
 
-  <div class="container">
+  <div class="container bg-light">
     {% block content %}
     <p>Default content...</p>
     {% endblock content %}
   </div>
 
-  <footer class="footer">
+  <footer class="footer bg-dark">
     <div class="container">
-      <span class="text-muted">Footer...</span>
+      <span class="text-light"></span>
     </div>
   </footer>
 
@@ -89,7 +92,24 @@
   <!-- Project JS -->
   <script src="{% static 'js/base.js' %}"></script>
 
+  <script>
+    function changeButtonTextColor(buttonId, color) {
+        var button = document.getElementById(buttonId);
+        if (button) {
+            // Using setProperty to add !important
+            button.style.setProperty('color', color, 'important');
+            // console.log("Button with ID " + buttonId + " found, and text color changed.");
+        } else {
+            // console.log("Button with ID " + buttonId + " not found.");
+        }
+    }
+
+
+    </script>
+
   {% endblock javascript %}
+
+  {% block extra_js %}{% endblock extra_js %}
 </body>
 
 </html>

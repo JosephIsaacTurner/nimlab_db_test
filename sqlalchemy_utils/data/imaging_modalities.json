@@ -1,0 +1,38 @@
+[
+    {
+        "name": "T1",
+        "description": "T1 MRI imaging provides high-resolution images where anatomical details are clear. In T1-weighted images, white matter appears bright, and gray matter appears darker. This type of imaging is particularly good for looking at the structure of the brain and identifying abnormalities in brain anatomy."
+    },
+    {
+        "name": "T2",
+        "description": "T2 MRI imaging is useful for detecting lesions and abnormalities in the brain. In T2-weighted images, cerebrospinal fluid appears bright, white matter is darker, and gray matter is lighter. This contrast makes T2 imaging effective for identifying edema, tumors, and other pathological changes."
+    },
+    {
+        "name": "CT",
+        "description": "CT scans use X-rays to create images of the brain. In CT images, bones appear white, cerebrospinal fluid is dark, and brain tissue appears in shades of gray. CT scans are useful for quickly visualizing bone fractures, bleeding, and other acute issues. The resolution is generally lower than MRI, but it is faster and can be used in emergency situations."
+    },
+    {
+        "name": "DWI",
+        "description": "Diffusion Weighted Imaging (DWI) is a type of MRI that measures the diffusion of water molecules in tissue. In DWI images, areas of restricted diffusion, such as acute ischemic stroke, appear bright. This imaging modality is highly sensitive for detecting early changes in stroke and can be used to assess the integrity of brain tissue."
+    },
+    {
+        "name": "FLAIR",
+        "description": "Fluid-Attenuated Inversion Recovery (FLAIR) MRI imaging is useful for detecting lesions in areas with high water content. In FLAIR images, cerebrospinal fluid is dark, which improves the visibility of lesions near the CSF. This modality is particularly useful for identifying multiple sclerosis plaques and other demyelinating diseases."
+    },
+    {
+        "name": "fMRI",
+        "description": "Functional MRI (fMRI) measures brain activity by detecting changes in blood flow. In fMRI images, active brain areas appear brighter due to increased blood oxygen levels. This modality is useful for mapping brain functions, studying brain activity during tasks, and researching neurological conditions."
+    },
+    {
+        "name": "MRA",
+        "description": "Magnetic Resonance Angiography (MRA) is a type of MRI that visualizes blood vessels. In MRA images, blood vessels appear bright, allowing for the assessment of vascular conditions such as aneurysms, stenosis, and vascular malformations. This modality is non-invasive and provides detailed images of the brain's vascular system."
+    },
+    {
+        "name": "PET",
+        "description": "Positron Emission Tomography (PET) is a nuclear imaging technique that uses radioactive tracers to visualize metabolic processes in the brain. In PET images, areas with high metabolic activity appear bright. This modality is useful for diagnosing and monitoring conditions such as Alzheimer's disease, epilepsy, and brain tumors."
+    },
+    {
+        "name": "SWI",
+        "description": "Susceptibility Weighted Imaging (SWI) is an MRI technique that is highly sensitive to changes in magnetic susceptibility. In SWI images, areas with high iron content or blood products appear dark. This modality is useful for detecting microbleeds, hemorrhages, and vascular malformations."
+    }
+]

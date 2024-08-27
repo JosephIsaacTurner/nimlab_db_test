@@ -1,11 +1,44 @@
 {% extends '_base.html' %}
 {% load static %}
 
-{% block title %}Home page{% endblock title %}
+{% block title %}CBCT Web{% endblock title %}
 
 {% block content %}
 <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-  <img src="{% static 'images/logo.png' %}" class="img-fluid" alt="DjangoX logo"/>
-  <p class="lead">A Django starter project with batteries.</p>
+  <img src="{% static 'images/lab_logo1.png' %}" class="img-fluid" alt="DjangoX logo"/>
+  <br>
 </div>
+<div class="col-sm-8 mx-auto">
+<hr>
+<h2 class="text-center mx-auto lead display-6">Database Interface</h2>
+<br>
+
+  <p class="lead">Welcome to the database interface for the Center for Brain Circuit Therapeutics. This interface allows you to search for datasets, view and download files, and more.</p>
+<h4>Pages:</h4>
+<ul>
+  <li><a href="{% url 'usage' %}" class="px-2 link-dark">Usage</a></li>
+  <li><a href="{% url 'datasets' %}" class="px-2 link-dark">Datasets</a></li>
+</ul>
+<br>
+<h4>Quick Links:</h4>
+<ul>
+  <li><a href="/static/data/072224_nimlab_database.xlsx" class="px-2 link-dark">CBCT Master Excel Sheet</a></li>
+  <li><a href="/static/data/scl1073_data.csv" class="px-2 link-dark">Symptom Causing Lesions CSV</a></li>
+  <li><a href="https://github.com/nimlab" class="px-2 link-dark">Nimlab Github</a></li>
+  <li><a href="https://jupyterhub2.partners.org/" class="px-2 link-dark">Jupyterlab</a></li>
+</ul>
+<br>
+<hr>
+</div>
+<div class="d-flex justify-content-center flex-wrap">
+  <img src="/static/images/Brigham_and_Womens_Hospital_logo.svg.png" class="img-fluid" style="max-height: 80px;">
+  <img src="/static/images/cbct_logo_dark.png" class="img-fluid" style="max-height: 80px;">
+  <img src="/static/images/harvard_med_logo.png" class="img-fluid" style="max-height: 80px;">
+</div>
+<br>
 {% endblock content %}
+{% block extra_js %}
+<script>
+changeButtonTextColor('home', '#2472f0');
+</script>
+{% endblock extra_js %}

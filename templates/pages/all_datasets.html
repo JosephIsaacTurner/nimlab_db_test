@@ -1,0 +1,108 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <br>
+    <h2 class="text-center mx-auto lead display-6">Published Research Papers</h2>
+    <hr>
+    <div class="table-responsive">
+        <table id="researchPapersTable" class="table table-striped bg-light">
+            <thead>
+                <tr class="bg-light">
+                    <th></th> <!-- This is for the control column -->
+                    <th>Title</th>
+                    <th>DOI</th>
+                    <th>First Author</th>
+                    <th>Number of Subjects</th>
+                    <th>CSV</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for paper in papers %}
+                <tr class="bg-light" data-year="{{ paper.year }}" data-authors="{{ paper.get_author_names }}" data-comments="{{ paper.comments }}", data-nickname="{{ paper.nickname }}">
+                    <td></td>
+                    <td>{{ paper.title }}</td>
+                    <td><a href="https://doi.org/{{ paper.doi }}" target="_blank">{{ paper.doi }}</a></td>
+                    <td>{{ paper.first_author.name }}</td>
+                    <td>{{ paper.subjects.count }}</td> <!-- This will smartly count the number of related subjects -->
+                    <td><a href="{% url 'build_csv' paper.id %}" class="btn btn-success btn-sm">Download CSV</a></td>
+                    <td><a href="{% url 'dataset_details' paper.id %}" class="btn btn-primary btn-sm">View Details</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function format(d) {
+        const comments = (d.comments || 'No comments').replace(/_/g, ' ');
+        const authors = d.authors.replace(/_/g, ' ');
+        const nickname = d.nickname.replace(/_/g, ' ');
+
+        return '<b>Comments:</b> ' + comments + '<br>' 
+            + '<b>Authors:</b> ' + authors + '<br>'
+            + '<b>Nickname:</b> ' + nickname + '<br>';
+    }
+
+
+    const table = new DataTable('#researchPapersTable', {
+        responsive: true,
+        paging: false,
+        columns: [
+            {
+                class: 'dt-control',
+                orderable: false,
+                data: null,
+                defaultContent: ''
+            },
+            { data: 'title' },
+            { data: 'doi' },
+            { data: 'first_author' },
+            { data: 'subjects_count' },
+            { data: 'csv' },
+            { data: 'details' }
+        ],
+        order: [[1, 'asc']]       
+    });
+
+    // Array to track the ids of the details displayed rows
+    const detailRows = [];
+
+    table.on('click', 'tbody td.dt-control', function (event) {
+        let tr = event.target.closest('tr');
+        let row = table.row(tr);
+        let idx = detailRows.indexOf(tr.id);
+
+        if (row.child.isShown()) {
+            tr.classList.remove('details');
+            row.child.hide();
+            detailRows.splice(idx, 1);
+        } else {
+            tr.classList.add('details');
+            let rowData = row.data();
+            rowData.comments = $(tr).data('comments'); 
+            rowData.authors = $(tr).data('authors');
+            rowData.nickname = $(tr).data('nickname');
+            row.child(format(rowData)).show();
+            if (idx === -1) {
+                detailRows.push(tr.id);
+            }
+        }
+    });
+
+    // On each draw, loop over the `detailRows` array and show any child rows
+    table.on('draw', () => {
+        detailRows.forEach((id, i) => {
+            let el = document.querySelector('#' + id + ' td.dt-control');
+
+            if (el) {
+                el.dispatchEvent(new Event('click', { bubbles: true }));
+            }
+        });
+    });
+    
+    changeButtonTextColor('datasets', '#2472f0');
+</script>
+{% endblock extra_js %}

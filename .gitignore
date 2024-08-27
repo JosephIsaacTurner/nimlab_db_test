@@ -13,3 +13,5 @@ media
 
 # Virtual environment
 .venv
+
+.env

@@ -1,0 +1,19 @@
+{% extends '_base.html' %}
+
+{% block title %}Usage{% endblock %}
+
+{% block content %}
+<div class="markdown-body bg-light col-sm-8  mx-auto">
+    <br>
+    {{ html_content|safe }}
+</div>
+<br>
+<br>
+{% endblock content %}
+{% block script %}
+{% endblock script %}
+{% block extra_js %}
+<script>
+    changeButtonTextColor('usage', '#2472f0');
+</script>
+{% endblock extra_js %}

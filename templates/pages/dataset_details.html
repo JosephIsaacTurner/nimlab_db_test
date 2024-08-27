@@ -1,0 +1,301 @@
+{% extends '_base.html' %}
+
+{% block content %}
+
+<h2 class="text-center mx-auto lead display-6">{{ paper.get_title }}</h2>
+<hr>
+
+<div class="col-sm-12 mx-auto">
+
+    <div class="row align-items-center">
+        <div class="input-group mb-3 input-group-lg">
+            <a href="{% url 'datasets' %}" class="btn btn-primary">Return to List</a>
+            <select id="selectMenu" class="form-select" aria-label="Select a dataset">
+                {% for dataset in dataset_list %}
+                <option class="dropdown-item" url="{% url 'dataset_details' dataset.id %}" value="{{ dataset.id }}" {% if dataset.id == paper.id %}selected{% endif %}>
+                    {% if dataset.id == paper.id %}
+                        Selected: 
+                    {% endif %}
+                    {{ dataset.title }}
+                </option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-outline-secondary" type="button" onclick="setActionURL()" id="button-addon1">Select</button>
+        </div>    
+        <script>
+            const selectMenu = document.getElementById("selectMenu");
+            function setActionURL(e) {
+                const selectedOption = selectMenu.options[selectMenu.selectedIndex];
+                const redirectURL = selectedOption.getAttribute("url");
+                if (redirectURL) {
+                    window.location.href = redirectURL;
+                }
+            }
+        </script>
+        <p>
+            Select a dataset to view its details.
+        </p>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="papaya" data-params="params"></div>
+        </div>
+
+        <div class="col-sm-5">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title lead">Paper Details</h5>
+                    <p><b>CSV:</b> <a href="{% url 'build_csv' paper.id %}" class="btn btn-success btn-sm">Download CSV</a></p>
+                    <p><b>DOI:</b> <a href="https://doi.org/{{ paper.doi }}" target="_blank">{{ paper.doi }}</a></p>
+                    <p><b>Authors:</b> {{ paper.get_author_names }}</p>
+                    <p><b>Comments:</b> {{ paper.comments }}</p>
+                </div>
+            </div>
+
+            <!-- Collapsible block for "Group Level Maps" -->
+            <div class="accordion" id="groupMapsAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="groupMapsHeading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#groupMapsCollapse" aria-expanded="false" aria-controls="groupMapsCollapse">
+                            Group Level Maps
+                        </button>
+                    </h2>
+                    <div id="groupMapsCollapse" class="accordion-collapse collapse" aria-labelledby="groupMapsHeading" data-bs-parent="#groupMapsAccordion">
+                        <div class="accordion-body">
+                            <!-- Empty div for now -->
+                            <div>
+                                <p><i class="bi bi-exclamation-triangle-fill"></i></i> Under development <i class="bi bi-exclamation-triangle-fill"></i><br> In the future, we will store the final results of the papers here, including sensitivity maps, specificity maps, or connectivity maps seeded at an ROI identified in the analysis.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </div>
+<br>
+<!-- Collapsible block for "Subjects" -->
+<div class="accordion bg-light" id="subjectsAccordion">
+    <div class="accordion-item bg-light">
+        <h2 class="accordion-header" id="subjectsHeading">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#subjectsCollapse" aria-expanded="false" aria-controls="subjectsCollapse">
+                Subjects
+            </button>
+        </h2>
+        <div id="subjectsCollapse" class="accordion-collapse collapse bg-light" aria-labelledby="subjectsHeading" data-bs-parent="#subjectsAccordion">
+            <div class="accordion-body bg-light">
+                <!-- Table for displaying subjects -->
+                <table class="table table-striped table-hover" id="subjectTable">
+                    <thead>
+                        <tr>
+                            <th></th> <!-- Control Column -->
+                            {% if multiple_cohorts %}
+                            <th scope="col">Cohort</th>
+                            {% endif %}
+                            <th scope="col">Citation</th>
+                            <th scope="col">Subject</th>
+                            <th scope="col">ROI (2mm)</th>
+                            <th scope="col">GSP1000MF AvgR</th>
+                            <th scope="col">HCP842 Disconmap</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject in subjects %}
+                        <tr data-gsp500m_t="{{ subject.gsp500_m_avgr }}" data-gsp500f_t="{{ subject.gsp500_f_avgr }}" data-disconnectome_7t_bcbdisco="{{ subject.disconnectome_7t_bcbdisco }}" data-hcp842_disconmapsdisconnectedstreamlinemap="{{ subject.hcp842_disconmapsdisconnectedstreamlinemap }}" data-hcp842_disconmapstdifibermap="{{ subject.hcp842_disconmapstdifibermap }}" data-gsp1000_mf="{{ subject.gsp1000_mf_avgr }}" data-roi_2mm="{{ subject.roi_2mm}}" data-sex="{{ subject.sex}}" data-age="{{ subject.age }}" data-cause="{{ subject.cause}}" data-voxel_count="{{ subject.voxel_count}}">
+                            <td></td> <!-- Control Column -->
+                            {% if multiple_cohorts %}
+                                <td>{{ subject.cohort }}</td>
+                            {% endif %}
+                            <td>
+                                {% if subject.is_pubmed %}
+                                    <!-- Link to PubMed -->
+                                    <a href="https://pubmed.ncbi.nlm.nih.gov/{{ subject.citation|slice:'5:' }}" target="_blank">
+                                        {{ subject.citation|slice:'5:' }}
+                                    </a>
+                                {% elif subject.is_doi %}
+                                    <!-- Link to DOI -->
+                                    <a href="https://doi.org/{{ subject.citation }}" target="_blank">
+                                        {{ subject.citation }}
+                                    </a>
+                                {% else %}
+                                    <!-- Just display the citation text without a link -->
+                                    {{ subject.citation }}
+                                {% endif %}
+                            </td>
+                            <td>{{ subject.subject }}</td>
+                            <!-- <td><i url="/static/images/igePeak_ThalamusMask_left.nii.gz" style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('/static/images/igePeak_ThalamusMask_left.nii.gz', this)"></i> </td> -->
+                            <td><i url="{{MEDIA_URL}}{{subject.roi_2mm}}" style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ subject.roi_2mm }}', this)"></i> </td>
+                            <td><i url="{{MEDIA_URL}}{{subject.gsp1000_mf_avgr}}" style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ subject.gsp1000_mf_avgr }}', this)"></i> </td>
+                            <td><i url="{{MEDIA_URL}}{{subject.hcp842_disconmapstdifibermap}}" style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('{{ MEDIA_URL }}{{ subject.hcp842_disconmapstdifibermap }}', this)"></i> </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<br>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>  
+    changeButtonTextColor('datasets', '#2472f0');
+</script>
+<script type="text/javascript">
+    var params = [];
+    params["worldSpace"] = true;
+    // params["images"] = ["/static/images/mni152.nii.gz"];
+    params["images"] = ["/static/images/full8_400um_2009b_sym.nii.gz"]
+    params["luts"] = [
+        {"name":"Lesion Trace", "data": [[0, 0.9, 0.2, 0.2], [1, 1, 0.2, 0.2]]},
+        {"name":"PuBu", "data":[[0,1,0.968627,0.984314],[0.05,0.92549,0.905882,0.94902],[0.1,0.815686,0.819608,0.901961],[0.15,0.65098,0.741176,0.858824],[0.2,0.454902,0.662745,0.811765],[0.25,0.211765,0.564706,0.752941],[0.3,0.0196078,0.439216,0.690196],[0.35,0.0156863,0.352941,0.552941],[.4,0.00784314,0.219608,0.345098],[1.0,0.00784314,0.219608,0.345098]]},
+        {"name":"OrRd", "data":[[0,1,0.968627,0.92549],[0.125,0.996078,0.909804,0.784314],[0.25,0.992157,0.831373,0.619608],[0.375,0.992157,0.733333,0.517647],[0.5,0.988235,0.552941,0.34902],[0.625,0.937255,0.396078,0.282353],[0.75,0.843137,0.188235,0.121569],[0.875,0.701961,0,0],[1,0.498039,0,0]]},
+        {"name":"PuBuNotParametric", "data":[[0,1,0.968627,0.984314],[0.125,0.92549,0.905882,0.94902],[0.25,0.815686,0.819608,0.901961],[0.375,0.65098,0.741176,0.858824],[0.5,0.454902,0.662745,0.811765],[0.625,0.211765,0.564706,0.752941],[0.75,0.0196078,0.439216,0.690196],[0.875,0.0156863,0.352941,0.552941],[1,0.00784314,0.219608,0.345098]]}
+    ]
+    params["igePeak_ThalamusMask_left.nii.gz"] = {lut: "Lesion Trace", "alpha":0.80};
+    params["allowScroll"] = false;
+    params["radiological"] = true;
+
+    {% for subject in subjects %}
+        params["{{subject.roi_2mm}}".split('/').pop()] = {lut: "Lesion Trace", "alpha":1.0};
+        params["{{subject.gsp1000_mf_avgr}}".split('/').pop()] = {'parametric': true, 'min': 25, 'max': 100, 'alpha': 0.6, lut: "OrRd", 'negative_lut':'PuBu', 'symmetric':false};
+        params["{{subject.hcp842_disconmapstdifibermap}}".split('/').pop()] = {'parametric': false, 'min':0, 'max': 150, lut: "OrRd"};
+        params["{{subject.gsp500_m_avgr}}".split('/').pop()] = {'parametric': true, 'min': 25, 'max': 100, 'alpha': 0.6, lut: "OrRd", 'negative_lut':'PuBu', 'symmetric':false};
+        params["{{subject.gsp500_f_avgr}}".split('/').pop()] = {'parametric': true, 'min': 25, 'max': 100, 'alpha': 0.6, lut: "OrRd", 'negative_lut':'PuBu', 'symmetric':false};
+    {% endfor %}
+</script>
+<script>
+    function newNewToggle(link, element){
+        console.log("newNewToggle" + link);
+        if(params[link.split('/').pop()]){
+            console.log("found");
+            let viewer = papayaContainers[0].viewer;
+            let overlays = viewer.screenVolumes;
+            let overlay_list = overlays.map(overlay => overlay.volume.urls[0]);
+            if(overlay_list.includes(link)){
+                i = overlay_list.indexOf(link);
+                viewer.toggleOverlay(i);
+            }
+            else{
+                if(params[link.split('/').pop()].parametric = true){
+                    papaya.viewer.Viewer.MAX_OVERLAYS += 2;
+                }
+                else{
+                    papaya.viewer.Viewer.MAX_OVERLAYS +=1
+                }
+                viewer.loadOverlay([link],true,false,false);
+            }
+            if(element instanceof HTMLElement) {
+                element.classList.toggle("bi-square-fill");
+                element.classList.toggle("bi-square");
+            }
+        }
+    }
+</script>
+<script>
+    // Make the table a DataTable, and add row details (child rows).
+    function format(d) {
+        const voxel_count = d.voxel_count || 'Not Provided';
+        const sex = d.sex;
+        const age = d.age;
+        const cause = d.cause;
+        const gsp500f_t = d.gsp500f_t;
+        const gsp500m_t = d.gsp500m_t;
+        const disconnectome_7t_bcbdisco = d.disconnectome_7t_bcbdisco;
+        const hcp842_disconmapsdisconnectedstreamlinemap = d.hcp842_disconmapsdisconnectedstreamlinemap;
+        const hcp842_disconmapstdifibermap = d.hcp842_disconmapstdifibermap;
+
+        return `
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Additional Details</h5>
+                <div class="row mb-2">
+                    <div class="col-sm-6"><b>Voxel Count (2mm):</b> ${voxel_count}</div>
+                    <div class="col-sm-6"><b>Sex:</b> ${sex}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-6"><b>Age:</b> ${age}</div>
+                    <div class="col-sm-6"><b>Cause:</b> ${cause}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <b>GSP500_M AvgR:</b>
+                        <i url="${gsp500m_t}" style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('${gsp500m_t}', this)"></i>
+                    </div>
+                    <div class="col-sm-6">
+                        <b>GSP500_F AvgR:</b>
+                        <i url="${gsp500f_t}" style="color:red; font-size: 22px; cursor: pointer;" class="bi bi-square" onclick="newNewToggle('${gsp500f_t}', this)"></i>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    const table = new DataTable('#subjectTable', {
+    responsive: true,
+    paging: false,
+    columns: [
+        {
+            class: 'dt-control',
+            orderable: false,
+            data: null,
+            defaultContent: ''
+        },
+        {% if multiple_cohorts %}
+        { data: 'cohort' },
+        {% endif %}
+        { data: 'citation' },
+        { data: 'subject' },
+        { data: 'roi_2mm' },
+        { data: 'gsp1000_mf' },
+        { data: 'hcp842_disconmapstdifibermap' }
+    ],
+    order: [[1, 'asc']]
+});
+
+const detailRows = [];
+
+// Update event listener to target only cells in the control column
+table.on('click', 'tbody td.dt-control', function (event) {
+    let tr = event.target.closest('tr');
+    let row = table.row(tr);
+    let idx = detailRows.indexOf(tr.id);
+
+    if (row.child.isShown()) {
+        tr.classList.remove('details');
+        row.child.hide();
+        detailRows.splice(idx, 1);
+    } else {
+        tr.classList.add('details');
+        let rowData = row.data();
+        rowData.voxel_count = $(tr).data('voxel_count');
+        rowData.sex = $(tr).data('sex');
+        rowData.age = $(tr).data('age');
+        rowData.cause = $(tr).data('cause');
+        rowData.gsp500m_t = $(tr).data('gsp500m_t');
+        rowData.gsp500f_t = $(tr).data('gsp500f_t');
+        rowData.disconnectome_7t_bcbdisco = $(tr).data('disconnectome_7t_bcbdisco');
+        rowData.hcp842_disconmapsdisconnectedstreamlinemap = $(tr).data('hcp842_disconmapsdisconnectedstreamlinemap');
+        rowData.hcp842_disconmapstdifibermap = $(tr).data('hcp842_disconmapstdifibermap');
+        row.child(format(rowData)).show();
+        if (idx === -1) {
+            detailRows.push(tr.id);
+        }
+    }
+});
+
+table.on('draw', () => {
+    detailRows.forEach((id, i) => {
+        let el = document.querySelector('#' + id + ' td.dt-control');
+
+        if (el) {
+            el.dispatchEvent(new Event('click', { bubbles: true }));
+        }
+    });
+});
+
+</script>
+{% endblock extra_js %}
